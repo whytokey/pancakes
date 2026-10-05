@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Блинный Калькулятор — Идеальные блины в ложках</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbf0',
+              100: '#fef5d6',
+              200: '#fde599',
+              300: '#fbd05c',
+              400: '#f9b828',
+              500: '#e59b0f',
+              600: '#c57709',
+              700: '#9d540b',
+              800: '#804210',
+              900: '#6b3611',
+              950: '#3e1a05',
+            },
+            honey: {
+              cream: '#FFFDF9',
+              warm: '#FAF4EB',
+              border: '#F0E2D0',
+              accent: '#E59B0F'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #FAF6EF;
+      background-image: radial-gradient(#F0E5D3 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .honey-shadow {
+      box-shadow: 0 10px 30px -5px rgba(180, 83, 9, 0.12), 0 4px 6px -2px rgba(180, 83, 9, 0.05);
+    }
+    .active-scale {
+      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .active-scale:active {
+      transform: scale(0.96);
+    }
+    /* Custom Range Slider */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #c57709;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(107, 54, 17, 0.4);
+      cursor: pointer;
+      margin-top: -8px;
+      transition: all 0.2s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      background: #e59b0f;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #fde599;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="text-stone-800 antialiased min-h-screen flex flex-col justify-between selection:bg-brand-200">
+
+  <header class="w-full bg-white/90 backdrop-blur-md border-b border-brand-200/80 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-300 flex items-center justify-center shadow-md shadow-brand-500/20 text-white font-bold text-xl">
+          🥞
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight text-brand-950 font-serif">Блинный Калькулятор</h1>
+          <p class="text-xs text-brand-700/80 font-medium">Точный расчет ингредиентов в ложках</p>
+        </div>
+      </div>
+      
+      <button id="quickCopyBtn" class="flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 transition-colors">
+        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+        </svg>
+        <span class="hidden sm:inline">Скопировать список</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6 md:py-8 w-full flex-1">
+    
+    <!-- Hero Banner with portion controls -->
+    <section class="bg-gradient-to-b from-white to-brand-50/60 rounded-3xl p-6 sm:p-8 border border-brand-200/90 honey-shadow mb-8 relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-48 h-48 bg-brand-200/30 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="text-center max-w-xl mx-auto mb-6">
+        <span class="inline-block text-xs font-semibold uppercase tracking-wider text-brand-700 bg-brand-100/90 px-3 py-1 rounded-full mb-2">
+          Проверенный рецепт тонких блинчиков
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-brand-950">Сколько блинчиков приготовим?</h2>
+        <p class="text-sm text-stone-600 mt-1">Никаких весов и мерных стаканов — только столовые и чайные ложки</p>
+      </div>
+
+      <div class="max-w-md mx-auto">
+        <!-- Main Stepper -->
+        <div class="flex items-center justify-between bg-white rounded-2xl p-2 border-2 border-brand-200 shadow-sm mb-4">
+          <button id="decrementBtn" class="w-12 h-12 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 text-2xl font-bold flex items-center justify-center active-scale transition border border-brand-200/80">
+            −
+          </button>
+          
+          <div class="text-center flex-1 px-2">
+            <div class="flex items-baseline justify-center gap-1.5">
+              <input type="number" id="pancakeInput" min="1" max="60" value="2" class="w-16 text-center text-3xl font-black text-brand-950 focus:outline-none bg-transparent">
+              <span id="pancakeWord" class="text-sm font-semibold text-brand-800">блинчика</span>
+            </div>
+            <div class="text-[11px] text-stone-400 font-medium" id="portionNote">на 1 персону (перекус)</div>
+          </div>
+
+          <button id="incrementBtn" class="w-12 h-12 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-2xl font-bold flex items-center justify-center active-scale transition shadow-sm">
+            +
+          </button>
+        </div>
+
+        <!-- Smooth Range Slider -->
+        <div class="px-2 mb-4">
+          <input type="range" id="pancakeSlider" min="1" max="40" value="2" class="w-full">
+          <div class="flex justify-between text-[11px] text-stone-400 font-semibold px-1 mt-1">
+            <span>1 блин</span>
+            <span>10</span>
+            <span>20</span>
+            <span>30</span>
+            <span>40 блинов</span>
+          </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          <button data-count="2" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
+            🥞 2 шт (на пробу)
+          </button>
+          <button data-count="4" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
+            ☕ 4 шт (для двоих)
+          </button>
+          <button data-count="8" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
+            🍽️ 8 шт (завтрак)
+          </button>
+          <button data-count="16" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
+            👨‍👩‍👧‍👦 16 шт (семья)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- LEFT COLUMN: Ingredients checklist (7 Cols on desktop) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <div class="bg-white rounded-3xl p-6 border border-brand-200/90 honey-shadow">
+          <div class="flex items-center justify-between pb-4 border-b border-brand-100 mb-4">
+            <div>
+              <h3 class="text-xl font-bold font-serif text-brand-950 flex items-center gap-2">
+                <span>Ингредиенты</span>
+                <span class="text-xs bg-amber-100 text-amber-900 font-sans font-semibold px-2.5 py-0.5 rounded-full">
+                  только ложки
+                </span>
+              </h3>
+              <p class="text-xs text-stone-500 mt-0.5">Отмечайте галочками то, что уже отмерили в миску</p>
+            </div>
+            
+            <button id="resetChecklistBtn" class="text-xs font-semibold text-brand-700 hover:text-brand-900 transition underline underline-offset-4">
+              Сбросить отметки
+            </button>
+          </div>
+
+          <!-- Dynamic Ingredients List -->
+          <div id="ingredientsList" class="space-y-3">
+            <!-- Dynamically populated via JS -->
+          </div>
+
+          <!-- Smart Egg Insight Banner -->
+          <div id="eggAdviceCard" class="mt-5 p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 text-xs sm:text-sm flex items-start gap-3">
+            <div class="text-xl shrink-0">💡</div>
+            <div>
+              <div class="font-bold text-amber-900 mb-0.5" id="eggAdviceTitle">Секрет идеальной текстуры яиц</div>
+              <p class="text-amber-800/90 leading-relaxed" id="eggAdviceText">
+                На 1–2 блинчика мы берем только желток (или 2 ст. л. взбитого яйца). Так у готовых тонких блинчиков не будет запаха яичницы, а края останутся мягкими и нежными.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-amber-50/70 to-orange-50/50 rounded-3xl p-6 border border-brand-200">
+          <h4 class="font-serif font-bold text-lg text-brand-950 mb-3 flex items-center gap-2">
+            <span>✨</span> Почему этот рецепт получается всегда
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-stone-700">
+            <div class="p-3 bg-white/80 rounded-xl border border-brand-200/60">
+              <span class="font-bold text-brand-900 block mb-1">🔥 1. Кипяток заваривает муку</span>
+              Ложка крутого кипятка делает тесто податливым, не дает ему рваться при переворачивании и дарит ажурные дырочки.
+            </div>
+            <div class="p-3 bg-white/80 rounded-xl border border-brand-200/60">
+              <span class="font-bold text-brand-900 block mb-1">🧈 2. Масло прямо в тесто</span>
+              Растопленное сливочное или растительное масло внутри теста избавляет от необходимости смазывать сковороду перед каждым блином.
+            </div>
+            <div class="p-3 bg-white/80 rounded-xl border border-brand-200/60 sm:col-span-2">
+              <span class="font-bold text-brand-900 block mb-1">💧 3. Текучесть теста</span>
+              Оно должно свободно литься, как нежирные сливки. Если мука плотная и тесто густовато — капните еще половину ложки теплой воды.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Interactive Flip Timer Card -->
+        <div class="bg-white rounded-3xl p-6 border border-brand-200/90 honey-shadow">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold font-serif text-brand-950 flex items-center gap-2">
+              <span>⏱️</span> Таймер жарки
+            </h3>
+            <span id="timerStatusBadge" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
+              Готов к старту
+            </span>
+          </div>
+
+          <div class="bg-brand-50/70 rounded-2xl p-4 border border-brand-100 text-center mb-4">
+            <div class="text-xs font-semibold text-brand-800 uppercase tracking-wider mb-1" id="timerSideLabel">
+              Сторона 1: До подрумянивания краев
+            </div>
+            <div class="text-4xl sm:text-5xl font-black font-mono text-brand-950 my-1" id="timerDisplay">
+              01:00
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-brand-200/70 rounded-full h-2.5 overflow-hidden mt-3 mb-1">
+              <div id="timerProgress" class="bg-brand-500 h-full rounded-full transition-all duration-300" style="width: 100%"></div>
+            </div>
+            <p class="text-[11px] text-stone-500" id="timerHint">Около 60 секунд на среднем огне</p>
+          </div>
+
+          <!-- Timer Buttons -->
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button id="toggleTimerBtn" class="py-2.5 px-4 rounded-xl font-bold text-sm bg-brand-500 hover:bg-brand-600 text-white shadow-sm transition active-scale flex items-center justify-center gap-1.5">
+              <svg id="playIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <svg id="pauseIcon" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              <span id="toggleTimerText">Запустить</span>
+            </button>
+            <button id="resetTimerBtn" class="py-2.5 px-4 rounded-xl font-bold text-sm bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200 transition active-scale">
+              Сброс
+            </button>
+          </div>
+
+          <!-- Side Switcher -->
+          <div class="grid grid-cols-2 gap-1.5 p-1 bg-stone-100 rounded-xl">
+            <button id="selectSide1" class="py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-brand-900 transition">
+              1 сторона (60 сек)
+            </button>
+            <button id="selectSide2" class="py-1.5 text-xs font-semibold rounded-lg text-stone-600 hover:text-stone-900 transition">
+              2 сторона (25 сек)
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 border border-brand-200/90 honey-shadow">
+          <h3 class="text-lg font-bold font-serif text-brand-950 mb-3 flex items-center gap-2">
+            <span>🥣</span> Процесс приготовления
+          </h3>
+          
+          <ol class="space-y-3.5 text-xs sm:text-sm text-stone-700" id="stepsList">
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Основа:</strong>
+                В глубокой миске или кружке разотри яйцо/желток с сахаром и солью до растворения крупинок.
+              </div>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Молоко:</strong>
+                Влей всё отмеренное молоко и легко перемешай венчиком или вилкой.
+              </div>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Мука без комочков:</strong>
+                Всыпь муку с небольшой горкой и тщательно вымешай до гладкой шелковистой консистенции.
+              </div>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Заваривание и эластичность:</strong>
+                Влей столовую ложку крутого кипятка и ложку масла. Еще раз быстро взбей. Тесто станет жидким и глянцевым.
+              </div>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">5</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Прогрев сковороды:</strong>
+                Хорошо разогрей сковороду на среднем огне. Для самого первого блинчика можно смазать дно капелькой масла.
+              </div>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">6</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Выпекание:</strong>
+                <span id="bakeStepText">
+                  Вылей половину теста, распредели круговым движением по сковороде. Жарь ~60 сек, переверни и подержи еще 25 сек.
+                </span>
+              </div>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">7</span>
+              <div>
+                <strong class="text-stone-900 block font-medium">Подача:</strong>
+                Готовые блинчики выложи на тарелку, по желанию смажь кусочком сливочного масла, сверни треугольником и подавай теплыми!
+              </div>
+            </li>
+          </ol>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="w-full bg-white border-t border-brand-200/80 py-6 text-center text-xs text-stone-500 mt-12">
+    <div class="max-w-5xl mx-auto px-4">
+      <p class="font-medium text-stone-700">Твой проверенный рецепт на 2 идеальных блинчика, масштабируемый на любую компанию 🥞</p>
+      <p class="mt-1 text-stone-400">Приятного аппетита! Все пропорции сохранены в точности с оригиналом.</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-brand-950 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-brand-800">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Список ингредиентов скопирован!</span>
+  </div>
+
+  <script>
+    // State
+    let pancakeCount = 2;
+    let checkedItems = new Set();
+    
+    // Timer State
+    let timerDuration = 60; // 60s for side 1, 25s for side 2
+    let timeRemaining = 60;
+    let timerInterval = null;
+    let isRunning = false;
+    let currentSide = 1;
+
+    // Helper: Smart fractions display
+    function formatFraction(num) {
+      if (num <= 0) return '0';
+      const whole = Math.floor(num);
+      const frac = num - whole;
+      
+      let fracStr = '';
+      if (Math.abs(frac - 0.125) < 0.05) fracStr = '⅛';
+      else if (Math.abs(frac - 0.25) < 0.05) fracStr = '¼';
+      else if (Math.abs(frac - 0.333) < 0.06) fracStr = '⅓';
+      else if (Math.abs(frac - 0.5) < 0.05) fracStr = '½';
+      else if (Math.abs(frac - 0.666) < 0.06) fracStr = '⅔';
+      else if (Math.abs(frac - 0.75) < 0.05) fracStr = '¾';
+      else if (frac > 0.95) return String(whole + 1);
+      else if (frac > 0.05) {
+        // Fallback round to 1 decimal place
+        fracStr = (Math.round(frac * 10) / 10).toString().replace('0.', '.');
+      }
+
+      if (whole === 0) return fracStr || '0';
+      if (!fracStr) return String(whole);
+      return `${whole} ${fracStr}`;
+    }
+
+    // Russian pluralization helper
+    function getPlural(n, one, two, five) {
+      n = Math.abs(n) % 100;
+      const n1 = n % 10;
+      if (n > 10 && n < 20) return five;
+      if (n1 > 1 && n1 < 5) return two;
+      if (n1 === 1) return one;
+      return five;
+    }
+
+    // Smart egg calculation based on original recipe logic
+    function getEggCalculation(count) {
+      if (count === 1) {
+        return {
+          amount: "1",
+          unit: "желток",
+          detail: "или 1 ст. л. взбитого яйца",
+          adviceTitle: "На 1 блинчик:",
+          adviceText: "Лучше всего взять 1 желток (или ложку взбитого яйца). Так блинчик будет нежным и без привкуса омлета."
+        };
+      }
+      if (count === 2) {
+        return {
+          amount: "1",
+          unit: "желток",
+          detail: "или 2 ст. л. взбитого яйца",
+          adviceTitle: "Секрет идеальной текстуры на 2 блина:",
+          adviceText: "В оригинальном рецепте на 2 блинчика идет именно 1 желток (или 2 ст. л. взбитого яйца). Блинчики получаются золотистыми и шелковистыми."
+        };
+      }
+      if (count >= 3 && count <= 5) {
+        return {
+          amount: "1",
+          unit: "целое яйцо (С1/С0)",
+          detail: "взбить вилкой",
+          adviceTitle: "Пропорция на небольшую порцию:",
+          adviceText: "На 3–5 блинчиков 1 целое яйцо категории С1 или С0 сбалансирует тесто идеально."
+        };
+      }
+      // For more than 5 pancakes
+      const eggs = Math.round(count / 4);
+      const eggWord = getPlural(eggs, "целое яйцо", "целых яйца", "целых яиц");
+      return {
+        amount: String(eggs),
+        unit: eggWord,
+        detail: "категории С1",
+        adviceTitle: "Порция на большую компанию:",
+        adviceText: `Для ${count} блинчиков оптимально взять ${eggs} ${eggWord}. Тесто получится эластичным и будет легко разливаться.`
+      };
+    }
+
+    function calculateIngredients(count) {
+      // Base per 1 pancake:
+      // Milk: 2.5 ст. л.
+      // Flour: 1 ст. л. с горкой
+      // Boiling water: 0.5 ст. л.
+      // Butter/oil: 0.5 ст. л.
+      // Sugar: 0.25 ч. л.
+      // Salt: 0.125 ч. л.
+      const milkTBSP = count * 2.5;
+      const flourTBSP = count * 1.0;
+      const waterTBSP = count * 0.5;
+      const butterTBSP = count * 0.5;
+      const sugarTSP = count * 0.25;
+      const saltTSP = count * 0.125;
+
+      const eggInfo = getEggCalculation(count);
+
+      // Salt special text
+      let saltAmountText = formatFraction(saltTSP);
+      let saltDetail = "";
+      if (count <= 2) {
+        saltDetail = "щепотка";
+      }
+
+      return [
+        {
+          id: 'milk',
+          icon: '🥛',
+          name: 'Молоко',
+          amount: formatFraction(milkTBSP),
+          unit: 'ст. л.',
+          hint: count >= 8 ? `(~${Math.round(milkTBSP * 15)} мл, комнатной температуры)` : 'комнатной температуры'
+        },
+        {
+          id: 'flour',
+          icon: '🌾',
+          name: 'Мука пшеничная',
+          amount: formatFraction(flourTBSP),
+          unit: 'ст. л.',
+          hint: 'с небольшой горкой'
+        },
+        {
+          id: 'egg',
+          icon: '🥚',
+          name: 'Яйцо / желток',
+          amount: eggInfo.amount,
+          unit: eggInfo.unit,
+          hint: eggInfo.detail
+        },
+        {
+          id: 'water',
+          icon: '🫖',
+          name: 'Крутой кипяток',
+          amount: formatFraction(waterTBSP),
+          unit: 'ст. л.',
+          hint: 'прямо из закипевшего чайника'
+        },
+        {
+          id: 'butter',
+          icon: '🧈',
+          name: 'Сливочное или раст. масло',
+          amount: formatFraction(butterTBSP),
+          unit: 'ст. л.',
+          hint: 'растопленное (в тесто)'
+        },
+        {
+          id: 'sugar',
+          icon: '🍬',
+          name: 'Сахар',
+          amount: formatFraction(sugarTSP),
+          unit: 'ч. л.',
+          hint: 'для румяной корочки'
+        },
+        {
+          id: 'salt',
+          icon: '🧂',
+          name: 'Соль',
+          amount: saltAmountText,
+          unit: 'ч. л.',
+          hint: saltDetail || 'балансирует сладость'
+        }
+      ];
+    }
+
+    function renderIngredients() {
+      const listEl = document.getElementById('ingredientsList');
+      const items = calculateIngredients(pancakeCount);
+      const eggInfo = getEggCalculation(pancakeCount);
+
+      // Update egg advice card
+      document.getElementById('eggAdviceTitle').textContent = eggInfo.adviceTitle;
+      document.getElementById('eggAdviceText').textContent = eggInfo.adviceText;
+
+      listEl.innerHTML = items.map(item => {
+        const isChecked = checkedItems.has(item.id);
+        return `
+          <div data-id="${item.id}" class="ingredient-row flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer select-none ${
+            isChecked 
+              ? 'bg-stone-50 border-stone-200 opacity-60' 
+              : 'bg-white hover:bg-brand-50/50 border-brand-200/80 shadow-xs'
+          }">
+            <div class="flex items-center gap-3">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} class="w-5 h-5 rounded-lg text-brand-600 focus:ring-brand-500 border-stone-300 accent-amber-600 cursor-pointer pointer-events-none">
+              <span class="text-2xl">${item.icon}</span>
+              <div>
+                <div class="font-bold text-sm text-stone-900 ${isChecked ? 'line-through text-stone-500' : ''}">${item.name}</div>
+                <div class="text-[11px] text-stone-400 font-medium">${item.hint}</div>
+              </div>
+            </div>
+            
+            <div class="text-right pl-3 shrink-0">
+              <span class="text-base font-black text-brand-900 ${isChecked ? 'line-through text-stone-400' : ''}">${item.amount}</span>
+              <span class="text-xs font-bold text-stone-600 ml-0.5">${item.unit}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Attach click listeners to rows
+      listEl.querySelectorAll('.ingredient-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = row.getAttribute('data-id');
+          if (checkedItems.has(id)) {
+            checkedItems.delete(id);
+          } else {
+            checkedItems.add(id);
+          }
+          renderIngredients();
+        });
+      });
+
+      // Update Step 6 text with portion mention
+      const bakeStepText = document.getElementById('bakeStepText');
+      if (pancakeCount === 1) {
+        bakeStepText.textContent = "Вылей всё тесто на сковороду, распредели кругом. Жарь ~60 сек до румяных краев, переверни и подержи еще 25 сек.";
+      } else if (pancakeCount === 2) {
+        bakeStepText.textContent = "Вылей ровно половину теста, распредели кругом. Жарь ~60 сек, переверни на 25 сек. Затем вылей остаток теста и пожарь второй блинчик!";
+      } else {
+        bakeStepText.textContent = `Жарь блинчики один за другим (всего ${pancakeCount} шт.): наливай порцию теста, круговым движением распределяй по сковороде. Жарь ~60 сек на первой стороне и ~25 сек на второй.`;
+      }
+    }
+
+    function updateUI() {
+      // Sync input & slider
+      document.getElementById('pancakeInput').value = pancakeCount;
+      document.getElementById('pancakeSlider').value = pancakeCount;
+
+      // Word plural
+      const word = getPlural(pancakeCount, 'блинчик', 'блинчика', 'блинчиков');
+      document.getElementById('pancakeWord').textContent = word;
+
+      // Note
+      const noteEl = document.getElementById('portionNote');
+      if (pancakeCount <= 2) {
+        noteEl.textContent = 'на 1 персону (перекус / на пробу)';
+      } else if (pancakeCount <= 5) {
+        noteEl.textContent = 'на 2 персоны (дуэт)';
+      } else if (pancakeCount <= 10) {
+        noteEl.textContent = 'на 3–4 персоны (сытный завтрак)';
+      } else {
+        noteEl.textContent = 'на большую компанию / семью';
+      }
+
+      // Re-render ingredients
+      renderIngredients();
+    }
+
+    // Set count handler
+    function setCount(newVal) {
+      let val = parseInt(newVal, 10);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > 60) val = 60;
+      pancakeCount = val;
+      updateUI();
+    }
+
+    document.getElementById('incrementBtn').addEventListener('click', () => {
+      setCount(pancakeCount + 1);
+    });
+
+    document.getElementById('decrementBtn').addEventListener('click', () => {
+      setCount(pancakeCount - 1);
+    });
+
+    document.getElementById('pancakeInput').addEventListener('change', (e) => {
+      setCount(e.target.value);
+    });
+
+    document.getElementById('pancakeSlider').addEventListener('input', (e) => {
+      setCount(e.target.value);
+    });
+
+    // Preset buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const count = parseInt(btn.getAttribute('data-count'), 10);
+        setCount(count);
+      });
+    });
+
+    // Reset checklist
+    document.getElementById('resetChecklistBtn').addEventListener('click', () => {
+      checkedItems.clear();
+      renderIngredients();
+      showToast('Отметки ингредиентов сброшены', '🧹');
+    });
+
+    // Tone synthesizer using Web Audio API (no external files)
+    function playBeep() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        
+        // Gentle bell chime sequence: 2 notes
+        const now = ctx.currentTime;
+        
+        // First tone
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now); // E5
+        gain1.gain.setValueAtTime(0.25, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.4);
+
+        // Second tone higher
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.15); // A5
+        gain2.gain.setValueAtTime(0.3, now + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.8);
+      } catch (e) {
+        console.warn('Audio not available', e);
+      }
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById('timerDisplay');
+      const progress = document.getElementById('timerProgress');
+      display.textContent = formatTime(timeRemaining);
+      
+      const pct = (timeRemaining / timerDuration) * 100;
+      progress.style.width = `${pct}%`;
+    }
+
+    function setSide(sideNum) {
+      currentSide = sideNum;
+      pauseTimer();
+      if (sideNum === 1) {
+        timerDuration = 60;
+        timeRemaining = 60;
+        document.getElementById('timerSideLabel').textContent = 'Сторона 1: До подрумянивания краев';
+        document.getElementById('timerHint').textContent = 'Около 60 секунд на среднем огне';
+        document.getElementById('selectSide1').className = 'py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-brand-900 transition';
+        document.getElementById('selectSide2').className = 'py-1.5 text-xs font-semibold rounded-lg text-stone-600 hover:text-stone-900 transition';
+      } else {
+        timerDuration = 25;
+        timeRemaining = 25;
+        document.getElementById('timerSideLabel').textContent = 'Сторона 2: До золотистости';
+        document.getElementById('timerHint').textContent = 'Около 20–25 секунд';
+        document.getElementById('selectSide2').className = 'py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-brand-900 transition';
+        document.getElementById('selectSide1').className = 'py-1.5 text-xs font-semibold rounded-lg text-stone-600 hover:text-stone-900 transition';
+      }
+      document.getElementById('timerStatusBadge').textContent = 'Готов к старту';
+      document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600';
+      updateTimerDisplay();
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      document.getElementById('playIcon').classList.add('hidden');
+      document.getElementById('pauseIcon').classList.remove('hidden');
+      document.getElementById('toggleTimerText').textContent = 'Пауза';
+      document.getElementById('timerStatusBadge').textContent = 'Идет жарка...';
+      document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 animate-pulse';
+
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          isRunning = false;
+          playBeep();
+          document.getElementById('playIcon').classList.remove('hidden');
+          document.getElementById('pauseIcon').classList.add('hidden');
+          document.getElementById('toggleTimerText').textContent = 'Старт';
+          
+          if (currentSide === 1) {
+            showToast('Пора переворачивать блинчик! 🥞', '🔔');
+            document.getElementById('timerStatusBadge').textContent = 'Переворачивай!';
+            document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold';
+            // Auto switch to side 2 suggestion
+            setTimeout(() => {
+              setSide(2);
+            }, 1200);
+          } else {
+            showToast('Блинчик готов! Снимай на тарелку! 🎉', '🥞');
+            document.getElementById('timerStatusBadge').textContent = 'Готово!';
+            document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold';
+            setTimeout(() => {
+              setSide(1);
+            }, 1500);
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      clearInterval(timerInterval);
+      isRunning = false;
+      document.getElementById('playIcon').classList.remove('hidden');
+      document.getElementById('pauseIcon').classList.add('hidden');
+      document.getElementById('toggleTimerText').textContent = 'Продолжить';
+      document.getElementById('timerStatusBadge').textContent = 'На паузе';
+      document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600';
+    }
+
+    document.getElementById('toggleTimerBtn').addEventListener('click', () => {
+      if (isRunning) pauseTimer();
+      else startTimer();
+    });
+
+    document.getElementById('resetTimerBtn').addEventListener('click', () => {
+      pauseTimer();
+      timeRemaining = timerDuration;
+      document.getElementById('toggleTimerText').textContent = 'Запустить';
+      document.getElementById('timerStatusBadge').textContent = 'Сброшен';
+      updateTimerDisplay();
+    });
+
+    document.getElementById('selectSide1').addEventListener('click', () => setSide(1));
+    document.getElementById('selectSide2').addEventListener('click', () => setSide(2));
+
+    function showToast(message, icon = '✨') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      document.getElementById('toastIcon').textContent = icon;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2600);
+    }
+
+    // Copy ingredients list to clipboard using execCommand fallback
+    document.getElementById('quickCopyBtn').addEventListener('click', () => {
+      const items = calculateIngredients(pancakeCount);
+      const word = getPlural(pancakeCount, 'блинчик', 'блинчика', 'блинчиков');
+      
+      let text = `Рецепт на ${pancakeCount} ${word} (в ложках):\n`;
+      items.forEach(i => {
+        text += `• ${i.name}: ${i.amount} ${i.unit} (${i.hint})\n`;
+      });
+      text += `\nПриятного аппетита!`;
+
+      // Copy mechanism compatible with iframe restrictions
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showToast(`Ингредиенты на ${pancakeCount} ${word} скопированы!`, '📋');
+        } else {
+          showToast('Не удалось скопировать', '⚠️');
+        }
+      } catch (err) {
+        showToast('Ошибка при копировании', '⚠️');
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateUI();
+      updateTimerDisplay();
+    });
+  </script>
+</body>
+</html>
