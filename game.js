@@ -183,7 +183,7 @@
       pause: 'Пауза', exitText: 'Выйти в меню? Прогресс раунда будет потерян.', exit: 'Выйти', resume: 'Продолжить',
       leadersSub: 'Лучшие игроки в режиме «Марафон»', login: 'Войти, чтобы попасть в рейтинг',
       dailyTitle: 'Ежедневный бонус', dailySub: 'Заходи каждый день — награда растёт!', claimX2: 'Забрать x2', claim: 'Забрать',
-      sound: 'Звук', vibro: 'Вибрация', language: 'Язык', testAd: 'Тестовая реклама',
+      sound: 'Звук', volume: 'Громкость', vibro: 'Вибрация', language: 'Язык', testAd: 'Тестовая реклама',
       levelN: 'Уровень {n}', roundN: 'Кадр {n}', levelDone: 'Уровень пройден!', levelFail: 'Не получилось',
       levelFailSub: 'Попробуй ещё раз — у тебя получится!', perfect: 'Идеально! Без единой ошибки',
       good: 'Отличный результат!', endlessOver: 'Марафон окончен', newRecord: 'Новый рекорд!',
@@ -213,7 +213,7 @@
       pause: 'Paused', exitText: 'Exit to menu? Round progress will be lost.', exit: 'Exit', resume: 'Resume',
       leadersSub: 'Top players in Marathon mode', login: 'Log in to join the leaderboard',
       dailyTitle: 'Daily bonus', dailySub: 'Come back every day — rewards grow!', claimX2: 'Claim x2', claim: 'Claim',
-      sound: 'Sound', vibro: 'Vibration', language: 'Language', testAd: 'Test ad',
+      sound: 'Sound', volume: 'Volume', vibro: 'Vibration', language: 'Language', testAd: 'Test ad',
       levelN: 'Level {n}', roundN: 'Clip {n}', levelDone: 'Level complete!', levelFail: 'Not this time',
       levelFailSub: 'Try again — you can do it!', perfect: 'Perfect! No mistakes',
       good: 'Great result!', endlessOver: 'Marathon over', newRecord: 'New record!',
@@ -255,7 +255,7 @@
   const SAVE_KEY = 'kinokadr_save_v1';
   const DEFAULT_SAVE = {
     coins: CONFIG.startCoins, stars: {}, best: 0, bought: [], noAds: false, vip: false,
-    sound: true, vibro: true, lang: null, daily: { last: -1, streak: 0 },
+    sound: true, volume: 80, vibro: true, lang: null, daily: { last: -1, streak: 0 },
     shortcut: false, reviewed: false, wins: 0, updated: 0,
   };
   let save = { ...DEFAULT_SAVE };
@@ -567,6 +567,9 @@
   }
 
   /* ---------------- SOUND ---------------- */
+  const volumeLevel = () => Math.min(100, Math.max(0, Number(save.volume ?? 80))) / 100;
+  // Звук считается выключенным, если выключен переключатель или громкость на нуле.
+  const isMuted = () => !save.sound || volumeLevel() === 0;
   const Sound = {
     ctx: null,
     ensure() {
@@ -577,6 +580,8 @@
     tone(freq, dur, type = 'sine', vol = 0.15, delay = 0) {
       const ctx = this.ensure();
       if (!ctx) return;
+      vol *= volumeLevel();
+      if (vol < 0.0002) return;
       const t0 = ctx.currentTime + delay;
       const o = ctx.createOscillator();
       const g = ctx.createGain();
@@ -588,7 +593,7 @@
       o.start(t0); o.stop(t0 + dur + 0.05);
     },
     play(name) {
-      if (!save.sound || Game.isHardPaused()) return;
+      if (isMuted() || Game.isHardPaused()) return;
       switch (name) {
         case 'click': this.tone(660, 0.08, 'triangle', 0.08); break;
         case 'ok': this.tone(660, 0.12, 'triangle'); this.tone(990, 0.2, 'triangle', 0.15, 0.1); break;
@@ -603,6 +608,11 @@
     suspend() { try { this.ctx?.suspend(); } catch (e) { /* noop */ } },
     resume() { try { if (save.sound) this.ctx?.resume(); } catch (e) { /* noop */ } },
   };
+
+  function applyVolume() {
+    if (player) { player.setVolume(volumeLevel()); player.setMuted(isMuted()); }
+    UI.syncVolume();
+  }
 
   const vibrate = (p) => { if (save.vibro && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { /* noop */ } };
 
@@ -669,6 +679,20 @@
       this.current = name;
       if (name === 'menu') this.renderMenu();
       if (name === 'levels') this.renderLevels();
+    },
+
+    syncVolume() {
+      const val = isMuted() ? 0 : Math.round(volumeLevel() * 100);
+      ['set-volume', 'game-volume'].forEach((id) => {
+        const el = $(id);
+        el.value = val;
+        el.style.setProperty('--fill', `${val}%`);
+        el.setAttribute('aria-label', t('volume'));
+      });
+      $('set-volume-value').textContent = `${val}%`;
+      $('game-volume-value').textContent = `${val}%`;
+      $('btn-volume').setAttribute('aria-label', t('volume'));
+      $('btn-volume').querySelector('use').setAttribute('href', val === 0 ? '#i-vol-off' : '#i-vol');
     },
 
     applyI18n() {
@@ -956,7 +980,8 @@
         const start = pickClipStart(src);
         const ctrl = KP.create(host, src, {
           start,
-          muted: !save.sound,
+          muted: isMuted(),
+          volume: volumeLevel(),
           timeout: Math.min(CONFIG.videoTimeout, left),
           onTime: (time) => { if (token === clipToken) this.onTimeUpdate(time); },
         });
@@ -1311,6 +1336,7 @@
         case 'daily': Daily.render(); UI.openModal('modal-daily'); break;
         case 'settings':
           $('set-sound').checked = save.sound;
+          UI.syncVolume();
           $('set-vibro').checked = save.vibro;
           UI.openModal('modal-settings');
           break;
@@ -1442,7 +1468,24 @@
     // Settings
     $('set-sound').addEventListener('change', (e) => {
       save.sound = e.target.checked;
-      if (player) player.setMuted(!save.sound);
+      if (save.sound && volumeLevel() === 0) save.volume = 50;
+      applyVolume();
+      persist();
+    });
+    const onVolumeInput = (e) => {
+      save.volume = Math.round(Number(e.target.value));
+      if (save.volume > 0) save.sound = true;
+      applyVolume();
+    };
+    const onVolumeChange = () => { persist(); Sound.play('click'); };
+    ['set-volume', 'game-volume'].forEach((id) => {
+      $(id).addEventListener('input', onVolumeInput);
+      $(id).addEventListener('change', onVolumeChange);
+    });
+    // Кнопка-динамик в раунде: выключает/включает звук.
+    $('btn-volume').addEventListener('click', () => {
+      if (isMuted()) { save.sound = true; if (volumeLevel() === 0) save.volume = 50; } else save.sound = false;
+      applyVolume();
       persist();
     });
     $('set-vibro').addEventListener('change', (e) => { save.vibro = e.target.checked; persist(); });
@@ -1458,6 +1501,7 @@
     lang = save.lang || SDK.lang();
     bar.style.width = '75%';
     UI.applyI18n();
+    UI.syncVolume();
     bind();
     await SDK.restorePurchases();
     bar.style.width = '100%';

@@ -33,6 +33,8 @@
     <symbol id="i-infinity" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M12 12c-2-2.7-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.3 5.5-4zm0 0c2 2.7 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.3-5.5 4z"/></symbol>
     <symbol id="i-crown" viewBox="0 0 24 24"><path fill="currentColor" d="M3 7.5l4.5 4L12 4l4.5 7.5 4.5-4-2 11.5H5z"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-vol" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+    <symbol id="i-vol-off" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12M7 10l5 5 5-5M5 20h14"/></symbol>
   </svg>
 
@@ -181,6 +183,11 @@
             <button id="btn-replay" class="replay-btn" aria-label="Повторить отрывок"><svg class="i"><use href="#i-replay"/></svg></button>
             <div class="clip-progress"><div id="clip-progress"></div></div>
           </div>
+          <div id="vol-control" class="vol-control">
+            <button id="btn-volume" class="vol-btn" aria-label="Громкость"><svg class="i"><use href="#i-vol"/></svg></button>
+            <input type="range" id="game-volume" class="vol-range" min="0" max="100" step="1" aria-label="Громкость">
+            <b id="game-volume-value" class="vol-value">80%</b>
+          </div>
         </div>
 
         <div class="answer-col">
@@ -319,6 +326,11 @@
             <span data-i18n="sound">Звук</span>
             <input type="checkbox" id="set-sound" class="switch">
           </label>
+          <div class="setting setting-volume">
+            <span data-i18n="volume">Громкость</span>
+            <input type="range" id="set-volume" class="vol-range" min="0" max="100" step="1" aria-label="Громкость">
+            <b id="set-volume-value" class="vol-value">80%</b>
+          </div>
           <label class="setting">
             <span data-i18n="vibro">Вибрация</span>
             <input type="checkbox" id="set-vibro" class="switch">

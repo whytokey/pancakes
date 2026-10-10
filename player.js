@@ -3,16 +3,17 @@
   'use strict';
   const noop = () => {};
   function create(host, source, opts = {}) {
-    const o = { start: 0, muted: false, timeout: 15000, onTime: noop, ...opts };
+    const o = { start: 0, muted: false, volume: 1, timeout: 15000, onTime: noop, ...opts };
     if (!source || source.p !== 'file') {
       return { ready: Promise.resolve(false), el: null, play: noop, pause: noop,
-        seek: noop, setMuted: noop, destroy: noop };
+        seek: noop, setMuted: noop, setVolume: noop, destroy: noop };
     }
     const v = document.createElement('video');
     v.className = 'clip-frame clip-file';
     v.playsInline = true;
     v.preload = 'auto';
     v.muted = !!o.muted;
+    v.volume = Math.min(1, Math.max(0, o.volume));
     v.loop = o.start === 0;
     v.disablePictureInPicture = true;
     v.setAttribute('webkit-playsinline', '');
@@ -78,6 +79,7 @@
       pause() { wantPlaying = false; v.pause(); },
       seek(sec) { if (!destroyed) { try { v.currentTime = sec; } catch (e) {} } },
       setMuted(m) { v.muted = !!m; },
+      setVolume(x) { v.volume = Math.min(1, Math.max(0, x)); },
       destroy() {
         if (destroyed) return;
         destroyed = true; wantPlaying = false;
