@@ -2,864 +2,352 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Блинный Калькулятор — Идеальные блины в ложках</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-  
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#fffbf0',
-              100: '#fef5d6',
-              200: '#fde599',
-              300: '#fbd05c',
-              400: '#f9b828',
-              500: '#e59b0f',
-              600: '#c57709',
-              700: '#9d540b',
-              800: '#804210',
-              900: '#6b3611',
-              950: '#3e1a05',
-            },
-            honey: {
-              cream: '#FFFDF9',
-              warm: '#FAF4EB',
-              border: '#F0E2D0',
-              accent: '#E59B0F'
-            }
-          },
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            serif: ['"Playfair Display"', 'serif'],
-          }
-        }
-      }
-    }
-  </script>
-  
-  <style>
-    body {
-      background-color: #FAF6EF;
-      background-image: radial-gradient(#F0E5D3 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-    .honey-shadow {
-      box-shadow: 0 10px 30px -5px rgba(180, 83, 9, 0.12), 0 4px 6px -2px rgba(180, 83, 9, 0.05);
-    }
-    .active-scale {
-      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .active-scale:active {
-      transform: scale(0.96);
-    }
-    /* Custom Range Slider */
-    input[type=range] {
-      -webkit-appearance: none;
-      background: transparent;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      height: 24px;
-      width: 24px;
-      border-radius: 50%;
-      background: #c57709;
-      border: 3px solid #ffffff;
-      box-shadow: 0 2px 6px rgba(107, 54, 17, 0.4);
-      cursor: pointer;
-      margin-top: -8px;
-      transition: all 0.2s ease;
-    }
-    input[type=range]::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-      background: #e59b0f;
-    }
-    input[type=range]::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 8px;
-      cursor: pointer;
-      background: #fde599;
-      border-radius: 9999px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#09090f">
+  <meta name="description" content="Угадай фильм по отрывку — смотри короткие видеофрагменты из фильмов и угадывай название!">
+  <title>КиноКадр — Угадай фильм по отрывку</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Yandex Games SDK (на Яндекс Играх файл раздаётся автоматически) -->
+  <script src="/sdk.js"></script>
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 </head>
-<body class="text-stone-800 antialiased min-h-screen flex flex-col justify-between selection:bg-brand-200">
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc53d"/><circle cx="12" cy="12" r="7" fill="none" stroke="#e09a00" stroke-width="2"/><path d="M12 8v8M9.5 10.5h4a1.5 1.5 0 0 1 0 3h-3" stroke="#a86b00" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.4C.9 8 3 4 6.8 4c2.2 0 3.7 1.2 5.2 3 1.5-1.8 3-3 5.2-3C21 4 23.1 8 21.6 11.6 19.5 16.4 12 21 12 21z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3" fill="currentColor"/><circle cx="17.5" cy="20.5" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 11h16v10H4zM2.5 7h19v4h-19zM12 7v14M12 7S10.5 2.5 7.8 3.3C5.5 4 7 7 12 7zM12 7s1.5-4.5 4.2-3.7C18.5 4 17 7 12 7z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 2.5l1.6 2.4 2.8-.6.6 2.8 2.4 1.6-1.2 2.6 1.2 2.6-2.4 1.6-.6 2.8-2.8-.6L12 21.5l-1.6-2.4-2.8.6-.6-2.8-2.4-1.6L5.8 12 4.6 9.4 7 7.8l.6-2.8 2.8.6z"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" d="M7 3v18M17 3v18M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/></symbol>
+    <symbol id="i-fifty" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M5 19L19 5"/><text x="2" y="11" font-size="8" font-weight="800" fill="currentColor" font-family="system-ui">50</text><text x="12" y="21" font-size="8" font-weight="800" fill="currentColor" font-family="system-ui">50</text></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 9v4l2.5 2M9.5 2.5h5"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5.5v13a1 1 0 0 0 1.6.8L14 13v5.5a1 1 0 0 0 1.6.8l6-6.5a1 1 0 0 0 0-1.6l-6-6.5A1 1 0 0 0 14 5.5V11L5.6 4.7A1 1 0 0 0 4 5.5z"/></symbol>
+    <symbol id="i-ad" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="currentColor" d="M10 9.2v5.6a.6.6 0 0 0 .9.5l4.6-2.8a.6.6 0 0 0 0-1l-4.6-2.8a.6.6 0 0 0-.9.5z"/></symbol>
+    <symbol id="i-replay" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path fill="none" stroke="currentColor" stroke-width="2.2" d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-infinity" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M12 12c-2-2.7-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.3 5.5-4zm0 0c2 2.7 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.3-5.5 4z"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path fill="currentColor" d="M3 7.5l4.5 4L12 4l4.5 7.5 4.5-4-2 11.5H5z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12M7 10l5 5 5-5M5 20h14"/></symbol>
+  </svg>
 
-  <header class="w-full bg-white/90 backdrop-blur-md border-b border-brand-200/80 sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-300 flex items-center justify-center shadow-md shadow-brand-500/20 text-white font-bold text-xl">
-          🥞
-        </div>
-        <div>
-          <h1 class="font-bold text-lg leading-tight text-brand-950 font-serif">Блинный Калькулятор</h1>
-          <p class="text-xs text-brand-700/80 font-medium">Точный расчет ингредиентов в ложках</p>
-        </div>
-      </div>
-      
-      <button id="quickCopyBtn" class="flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 transition-colors">
-        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-        </svg>
-        <span class="hidden sm:inline">Скопировать список</span>
-      </button>
+  <div id="app">
+    <div class="bg" aria-hidden="true">
+      <div class="bg-glow bg-glow-1"></div>
+      <div class="bg-glow bg-glow-2"></div>
+      <div class="bg-grain"></div>
     </div>
-  </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-6 md:py-8 w-full flex-1">
-    
-    <!-- Hero Banner with portion controls -->
-    <section class="bg-gradient-to-b from-white to-brand-50/60 rounded-3xl p-6 sm:p-8 border border-brand-200/90 honey-shadow mb-8 relative overflow-hidden">
-      <div class="absolute -right-12 -top-12 w-48 h-48 bg-brand-200/30 rounded-full blur-3xl pointer-events-none"></div>
-      
-      <div class="text-center max-w-xl mx-auto mb-6">
-        <span class="inline-block text-xs font-semibold uppercase tracking-wider text-brand-700 bg-brand-100/90 px-3 py-1 rounded-full mb-2">
-          Проверенный рецепт тонких блинчиков
-        </span>
-        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-brand-950">Сколько блинчиков приготовим?</h2>
-        <p class="text-sm text-stone-600 mt-1">Никаких весов и мерных стаканов — только столовые и чайные ложки</p>
+    <!-- LOADER -->
+    <section id="screen-loader" class="screen active" aria-label="Загрузка">
+      <div class="loader-box">
+        <div class="logo">
+          <span class="logo-mark"><svg class="i"><use href="#i-film"/></svg></span>
+          <span class="logo-text">Кино<b>Кадр</b></span>
+        </div>
+        <div class="loader-bar"><div id="loader-bar"></div></div>
+        <p class="muted" data-i18n="loading">Загрузка...</p>
       </div>
+    </section>
 
-      <div class="max-w-md mx-auto">
-        <!-- Main Stepper -->
-        <div class="flex items-center justify-between bg-white rounded-2xl p-2 border-2 border-brand-200 shadow-sm mb-4">
-          <button id="decrementBtn" class="w-12 h-12 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 text-2xl font-bold flex items-center justify-center active-scale transition border border-brand-200/80">
-            −
+    <!-- MENU -->
+    <section id="screen-menu" class="screen" aria-label="Главное меню">
+      <header class="topbar">
+        <button class="pill" data-action="shop" aria-label="Монеты">
+          <svg class="i"><use href="#i-coin"/></svg><span class="coins-value">0</span><span class="pill-plus">+</span>
+        </button>
+        <div class="pill pill-static">
+          <svg class="i star-c"><use href="#i-star"/></svg><span class="stars-value">0</span>
+        </div>
+      </header>
+
+      <main class="menu-main">
+        <div class="hero">
+          <div class="filmstrip" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="logo logo-xl">
+            <span class="logo-mark"><svg class="i"><use href="#i-film"/></svg></span>
+            <span class="logo-text">Кино<b>Кадр</b></span>
+          </div>
+          <p class="hero-sub" data-i18n="tagline">Угадай фильм по отрывку</p>
+        </div>
+
+        <div class="menu-actions">
+          <button id="btn-play" class="btn btn-primary btn-xl">
+            <svg class="i"><use href="#i-play"/></svg>
+            <span class="btn-col">
+              <span data-i18n="play">Играть</span>
+              <small id="play-sub" class="btn-sub"></small>
+            </span>
           </button>
-          
-          <div class="text-center flex-1 px-2">
-            <div class="flex items-baseline justify-center gap-1.5">
-              <input type="number" id="pancakeInput" min="1" max="60" value="2" class="w-16 text-center text-3xl font-black text-brand-950 focus:outline-none bg-transparent">
-              <span id="pancakeWord" class="text-sm font-semibold text-brand-800">блинчика</span>
+          <div class="menu-row">
+            <button id="btn-endless" class="btn btn-glass">
+              <svg class="i"><use href="#i-infinity"/></svg>
+              <span class="btn-col">
+                <span data-i18n="endless">Марафон</span>
+                <small class="btn-sub"><span data-i18n="best">Рекорд</span>: <b id="best-score">0</b></small>
+              </span>
+            </button>
+            <button id="btn-levels" class="btn btn-glass">
+              <svg class="i"><use href="#i-grid"/></svg>
+              <span class="btn-col">
+                <span data-i18n="levels">Уровни</span>
+                <small class="btn-sub" id="levels-sub"></small>
+              </span>
+            </button>
+          </div>
+          <button id="btn-free-coins" class="btn btn-ad">
+            <svg class="i"><use href="#i-ad"/></svg>
+            <span data-i18n="freeCoins">Бесплатные монеты</span>
+            <span class="tag">+<span class="free-coins-amount">50</span> <svg class="i i-sm"><use href="#i-coin"/></svg></span>
+          </button>
+        </div>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Навигация">
+        <button class="nav-btn" data-action="shop"><svg class="i"><use href="#i-cart"/></svg><span data-i18n="shop">Магазин</span></button>
+        <button class="nav-btn" data-action="leaders"><svg class="i"><use href="#i-trophy"/></svg><span data-i18n="leaders">Рейтинг</span></button>
+        <button class="nav-btn" data-action="daily"><svg class="i"><use href="#i-gift"/></svg><span data-i18n="daily">Бонус</span><i id="daily-badge" class="badge" hidden></i></button>
+        <button class="nav-btn" id="btn-shortcut" hidden><svg class="i"><use href="#i-pin"/></svg><span data-i18n="shortcut">Ярлык</span></button>
+        <button class="nav-btn" data-action="settings"><svg class="i"><use href="#i-gear"/></svg><span data-i18n="settings">Опции</span></button>
+      </nav>
+    </section>
+
+    <!-- LEVELS -->
+    <section id="screen-levels" class="screen" aria-label="Уровни">
+      <header class="topbar">
+        <button class="icon-btn" id="btn-levels-back" aria-label="Назад"><svg class="i"><use href="#i-back"/></svg></button>
+        <h2 class="screen-title" data-i18n="levels">Уровни</h2>
+        <button class="pill" data-action="shop" aria-label="Монеты">
+          <svg class="i"><use href="#i-coin"/></svg><span class="coins-value">0</span><span class="pill-plus">+</span>
+        </button>
+      </header>
+      <div class="scroll-area">
+        <div id="categories-list" class="categories"></div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="screen-game" class="screen" aria-label="Игра">
+      <header class="hud">
+        <button class="icon-btn" id="btn-game-back" aria-label="Выход"><svg class="i"><use href="#i-back"/></svg></button>
+        <div class="hud-center">
+          <div id="hud-title" class="hud-title"></div>
+          <div id="round-dots" class="round-dots"></div>
+        </div>
+        <div class="hud-right">
+          <div id="hud-lives" class="lives" aria-label="Жизни"></div>
+          <div class="pill pill-sm"><svg class="i"><use href="#i-coin"/></svg><span class="coins-value">0</span></div>
+        </div>
+      </header>
+
+      <div class="game-body">
+        <div class="stage-col">
+          <div id="video-wrap" class="video-wrap">
+            <div id="clip-host" class="clip-host" aria-hidden="true"></div>
+            <div class="clip-shield" aria-hidden="true"></div>
+            <div class="video-vignette" aria-hidden="true"></div>
+            <div id="clip-spinner" class="spinner-wrap"><div class="spinner"></div></div>
+            <div id="clip-fallback" class="fallback" hidden>
+              <svg class="i fallback-icon"><use href="#i-film"/></svg>
+              <p class="fallback-label" data-i18n="scene">Сцена из фильма</p>
+              <p id="fallback-text" class="fallback-text"></p>
+              <p id="fallback-year" class="fallback-year"></p>
             </div>
-            <div class="text-[11px] text-stone-400 font-medium" id="portionNote">на 1 персону (перекус)</div>
+            <div id="reveal" class="reveal" hidden>
+              <div class="reveal-inner">
+                <span id="reveal-status" class="reveal-status"></span>
+                <strong id="reveal-title"></strong>
+                <span id="reveal-year"></span>
+              </div>
+            </div>
+            <div class="video-top">
+              <div id="combo-badge" class="combo" hidden></div>
+              <div class="score-chip"><span data-i18n="score">Очки</span> <b id="hud-score">0</b></div>
+            </div>
+            <div class="timer">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
+                <circle cx="24" cy="24" r="20" class="timer-bg"/>
+                <circle cx="24" cy="24" r="20" id="timer-circle" class="timer-fg"/>
+              </svg>
+              <span id="timer-text">20</span>
+            </div>
+            <button id="btn-replay" class="replay-btn" aria-label="Повторить отрывок"><svg class="i"><use href="#i-replay"/></svg></button>
+            <div class="clip-progress"><div id="clip-progress"></div></div>
           </div>
-
-          <button id="incrementBtn" class="w-12 h-12 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-2xl font-bold flex items-center justify-center active-scale transition shadow-sm">
-            +
-          </button>
         </div>
 
-        <!-- Smooth Range Slider -->
-        <div class="px-2 mb-4">
-          <input type="range" id="pancakeSlider" min="1" max="40" value="2" class="w-full">
-          <div class="flex justify-between text-[11px] text-stone-400 font-semibold px-1 mt-1">
-            <span>1 блин</span>
-            <span>10</span>
-            <span>20</span>
-            <span>30</span>
-            <span>40 блинов</span>
+        <div class="answer-col">
+          <p class="question" data-i18n="question">Из какого фильма этот отрывок?</p>
+          <div id="options" class="options"></div>
+          <div class="hints">
+            <button id="hint-fifty" class="hint-btn">
+              <svg class="i"><use href="#i-fifty"/></svg>
+              <span class="hint-name">50/50</span>
+              <span class="hint-cost"><svg class="i i-sm"><use href="#i-coin"/></svg><span class="cost">30</span></span>
+            </button>
+            <button id="hint-time" class="hint-btn">
+              <svg class="i"><use href="#i-clock"/></svg>
+              <span class="hint-name">+10 <span data-i18n="sec">сек</span></span>
+              <span class="hint-cost"><svg class="i i-sm"><use href="#i-coin"/></svg><span class="cost">20</span></span>
+            </button>
+            <button id="hint-skip" class="hint-btn">
+              <svg class="i"><use href="#i-skip"/></svg>
+              <span class="hint-name" data-i18n="skip">Пропуск</span>
+              <span class="hint-cost"><svg class="i i-sm"><use href="#i-coin"/></svg><span class="cost">50</span></span>
+            </button>
           </div>
-        </div>
-
-        <!-- Quick Presets -->
-        <div class="flex flex-wrap items-center justify-center gap-2">
-          <button data-count="2" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
-            🥞 2 шт (на пробу)
-          </button>
-          <button data-count="4" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
-            ☕ 4 шт (для двоих)
-          </button>
-          <button data-count="8" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
-            🍽️ 8 шт (завтрак)
-          </button>
-          <button data-count="16" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-brand-200 text-stone-700 hover:border-brand-500 hover:text-brand-800 transition active-scale">
-            👨‍👩‍👧‍👦 16 шт (семья)
-          </button>
         </div>
       </div>
     </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- LEFT COLUMN: Ingredients checklist (7 Cols on desktop) -->
-      <div class="lg:col-span-7 space-y-6">
-        
-        <div class="bg-white rounded-3xl p-6 border border-brand-200/90 honey-shadow">
-          <div class="flex items-center justify-between pb-4 border-b border-brand-100 mb-4">
-            <div>
-              <h3 class="text-xl font-bold font-serif text-brand-950 flex items-center gap-2">
-                <span>Ингредиенты</span>
-                <span class="text-xs bg-amber-100 text-amber-900 font-sans font-semibold px-2.5 py-0.5 rounded-full">
-                  только ложки
-                </span>
-              </h3>
-              <p class="text-xs text-stone-500 mt-0.5">Отмечайте галочками то, что уже отмерили в миску</p>
-            </div>
-            
-            <button id="resetChecklistBtn" class="text-xs font-semibold text-brand-700 hover:text-brand-900 transition underline underline-offset-4">
-              Сбросить отметки
-            </button>
-          </div>
+    <!-- MODALS -->
+    <div id="modal-backdrop" class="modal-backdrop" hidden></div>
 
-          <!-- Dynamic Ingredients List -->
-          <div id="ingredientsList" class="space-y-3">
-            <!-- Dynamically populated via JS -->
-          </div>
-
-          <!-- Smart Egg Insight Banner -->
-          <div id="eggAdviceCard" class="mt-5 p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 text-xs sm:text-sm flex items-start gap-3">
-            <div class="text-xl shrink-0">💡</div>
-            <div>
-              <div class="font-bold text-amber-900 mb-0.5" id="eggAdviceTitle">Секрет идеальной текстуры яиц</div>
-              <p class="text-amber-800/90 leading-relaxed" id="eggAdviceText">
-                На 1–2 блинчика мы берем только желток (или 2 ст. л. взбитого яйца). Так у готовых тонких блинчиков не будет запаха яичницы, а края останутся мягкими и нежными.
-              </p>
-            </div>
-          </div>
+    <div id="modal-result" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card result-card">
+        <div id="result-stars" class="result-stars"></div>
+        <h3 id="result-title" class="modal-title"></h3>
+        <p id="result-sub" class="muted"></p>
+        <div class="result-stats">
+          <div class="stat"><span data-i18n="score">Очки</span><b id="result-score">0</b></div>
+          <div class="stat"><span data-i18n="correct">Верно</span><b id="result-correct">0</b></div>
+          <div class="stat"><span data-i18n="reward">Награда</span><b><svg class="i i-sm"><use href="#i-coin"/></svg><span id="result-coins">0</span></b></div>
         </div>
-
-        <div class="bg-gradient-to-br from-amber-50/70 to-orange-50/50 rounded-3xl p-6 border border-brand-200">
-          <h4 class="font-serif font-bold text-lg text-brand-950 mb-3 flex items-center gap-2">
-            <span>✨</span> Почему этот рецепт получается всегда
-          </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-stone-700">
-            <div class="p-3 bg-white/80 rounded-xl border border-brand-200/60">
-              <span class="font-bold text-brand-900 block mb-1">🔥 1. Кипяток заваривает муку</span>
-              Ложка крутого кипятка делает тесто податливым, не дает ему рваться при переворачивании и дарит ажурные дырочки.
-            </div>
-            <div class="p-3 bg-white/80 rounded-xl border border-brand-200/60">
-              <span class="font-bold text-brand-900 block mb-1">🧈 2. Масло прямо в тесто</span>
-              Растопленное сливочное или растительное масло внутри теста избавляет от необходимости смазывать сковороду перед каждым блином.
-            </div>
-            <div class="p-3 bg-white/80 rounded-xl border border-brand-200/60 sm:col-span-2">
-              <span class="font-bold text-brand-900 block mb-1">💧 3. Текучесть теста</span>
-              Оно должно свободно литься, как нежирные сливки. Если мука плотная и тесто густовато — капните еще половину ложки теплой воды.
-            </div>
-          </div>
+        <button id="btn-double" class="btn btn-ad btn-block">
+          <svg class="i"><use href="#i-ad"/></svg><span data-i18n="doubleReward">Удвоить награду</span><span class="tag">x2</span>
+        </button>
+        <div class="modal-actions">
+          <button id="btn-result-menu" class="btn btn-glass" data-i18n="menu">Меню</button>
+          <button id="btn-result-retry" class="btn btn-glass" data-i18n="retry">Ещё раз</button>
+          <button id="btn-result-next" class="btn btn-primary" data-i18n="next">Дальше</button>
         </div>
-
       </div>
+    </div>
 
-      <div class="lg:col-span-5 space-y-6">
-        
-        <!-- Interactive Flip Timer Card -->
-        <div class="bg-white rounded-3xl p-6 border border-brand-200/90 honey-shadow">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold font-serif text-brand-950 flex items-center gap-2">
-              <span>⏱️</span> Таймер жарки
-            </h3>
-            <span id="timerStatusBadge" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
-              Готов к старту
-            </span>
-          </div>
-
-          <div class="bg-brand-50/70 rounded-2xl p-4 border border-brand-100 text-center mb-4">
-            <div class="text-xs font-semibold text-brand-800 uppercase tracking-wider mb-1" id="timerSideLabel">
-              Сторона 1: До подрумянивания краев
-            </div>
-            <div class="text-4xl sm:text-5xl font-black font-mono text-brand-950 my-1" id="timerDisplay">
-              01:00
-            </div>
-            
-            <!-- Progress Bar -->
-            <div class="w-full bg-brand-200/70 rounded-full h-2.5 overflow-hidden mt-3 mb-1">
-              <div id="timerProgress" class="bg-brand-500 h-full rounded-full transition-all duration-300" style="width: 100%"></div>
-            </div>
-            <p class="text-[11px] text-stone-500" id="timerHint">Около 60 секунд на среднем огне</p>
-          </div>
-
-          <!-- Timer Buttons -->
-          <div class="grid grid-cols-2 gap-2 mb-3">
-            <button id="toggleTimerBtn" class="py-2.5 px-4 rounded-xl font-bold text-sm bg-brand-500 hover:bg-brand-600 text-white shadow-sm transition active-scale flex items-center justify-center gap-1.5">
-              <svg id="playIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <svg id="pauseIcon" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-              <span id="toggleTimerText">Запустить</span>
-            </button>
-            <button id="resetTimerBtn" class="py-2.5 px-4 rounded-xl font-bold text-sm bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200 transition active-scale">
-              Сброс
-            </button>
-          </div>
-
-          <!-- Side Switcher -->
-          <div class="grid grid-cols-2 gap-1.5 p-1 bg-stone-100 rounded-xl">
-            <button id="selectSide1" class="py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-brand-900 transition">
-              1 сторона (60 сек)
-            </button>
-            <button id="selectSide2" class="py-1.5 text-xs font-semibold rounded-lg text-stone-600 hover:text-stone-900 transition">
-              2 сторона (25 сек)
-            </button>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-3xl p-6 border border-brand-200/90 honey-shadow">
-          <h3 class="text-lg font-bold font-serif text-brand-950 mb-3 flex items-center gap-2">
-            <span>🥣</span> Процесс приготовления
-          </h3>
-          
-          <ol class="space-y-3.5 text-xs sm:text-sm text-stone-700" id="stepsList">
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Основа:</strong>
-                В глубокой миске или кружке разотри яйцо/желток с сахаром и солью до растворения крупинок.
-              </div>
-            </li>
-
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Молоко:</strong>
-                Влей всё отмеренное молоко и легко перемешай венчиком или вилкой.
-              </div>
-            </li>
-
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Мука без комочков:</strong>
-                Всыпь муку с небольшой горкой и тщательно вымешай до гладкой шелковистой консистенции.
-              </div>
-            </li>
-
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Заваривание и эластичность:</strong>
-                Влей столовую ложку крутого кипятка и ложку масла. Еще раз быстро взбей. Тесто станет жидким и глянцевым.
-              </div>
-            </li>
-
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">5</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Прогрев сковороды:</strong>
-                Хорошо разогрей сковороду на среднем огне. Для самого первого блинчика можно смазать дно капелькой масла.
-              </div>
-            </li>
-
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">6</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Выпекание:</strong>
-                <span id="bakeStepText">
-                  Вылей половину теста, распредели круговым движением по сковороде. Жарь ~60 сек, переверни и подержи еще 25 сек.
-                </span>
-              </div>
-            </li>
-
-            <li class="flex items-start gap-3">
-              <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-900 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">7</span>
-              <div>
-                <strong class="text-stone-900 block font-medium">Подача:</strong>
-                Готовые блинчики выложи на тарелку, по желанию смажь кусочком сливочного масла, сверни треугольником и подавай теплыми!
-              </div>
-            </li>
-          </ol>
-        </div>
-
+    <div id="modal-revive" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card">
+        <div class="modal-icon heart-icon"><svg class="i"><use href="#i-heart"/></svg></div>
+        <h3 class="modal-title" data-i18n="outOfLives">Жизни закончились</h3>
+        <p class="muted" data-i18n="reviveText">Продолжить игру и сохранить прогресс?</p>
+        <button id="btn-revive-ad" class="btn btn-ad btn-block">
+          <svg class="i"><use href="#i-ad"/></svg><span data-i18n="reviveAd">Продолжить за рекламу</span><span class="tag">+2 <svg class="i i-sm heart-c"><use href="#i-heart"/></svg></span>
+        </button>
+        <button id="btn-revive-coins" class="btn btn-glass btn-block">
+          <span data-i18n="reviveCoins">Продолжить за</span>
+          <span class="tag"><svg class="i i-sm"><use href="#i-coin"/></svg><span id="revive-cost">100</span></span>
+        </button>
+        <button id="btn-revive-no" class="btn btn-text btn-block" data-i18n="giveUp">Завершить</button>
       </div>
-
     </div>
-  </main>
 
-  <footer class="w-full bg-white border-t border-brand-200/80 py-6 text-center text-xs text-stone-500 mt-12">
-    <div class="max-w-5xl mx-auto px-4">
-      <p class="font-medium text-stone-700">Твой проверенный рецепт на 2 идеальных блинчика, масштабируемый на любую компанию 🥞</p>
-      <p class="mt-1 text-stone-400">Приятного аппетита! Все пропорции сохранены в точности с оригиналом.</p>
+    <div id="modal-nocoins" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card">
+        <button class="modal-close" data-close aria-label="Закрыть"><svg class="i"><use href="#i-close"/></svg></button>
+        <div class="modal-icon coin-icon"><svg class="i"><use href="#i-coin"/></svg></div>
+        <h3 class="modal-title" data-i18n="noCoins">Не хватает монет</h3>
+        <p class="muted" id="nocoins-text"></p>
+        <button id="btn-nocoins-ad" class="btn btn-ad btn-block">
+          <svg class="i"><use href="#i-ad"/></svg><span data-i18n="hintForAd">Подсказка за рекламу</span>
+        </button>
+        <button id="btn-nocoins-shop" class="btn btn-primary btn-block">
+          <svg class="i"><use href="#i-cart"/></svg><span data-i18n="toShop">В магазин</span>
+        </button>
+      </div>
     </div>
-  </footer>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-brand-950 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-brand-800">
-    <span id="toastIcon">✨</span>
-    <span id="toastMessage">Список ингредиентов скопирован!</span>
+    <div id="modal-exit" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card">
+        <h3 class="modal-title" data-i18n="pause">Пауза</h3>
+        <p class="muted" data-i18n="exitText">Выйти в меню? Прогресс раунда будет потерян.</p>
+        <div class="modal-actions">
+          <button id="btn-exit-yes" class="btn btn-glass" data-i18n="exit">Выйти</button>
+          <button class="btn btn-primary" data-close data-i18n="resume">Продолжить</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-shop" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card modal-wide">
+        <button class="modal-close" data-close aria-label="Закрыть"><svg class="i"><use href="#i-close"/></svg></button>
+        <h3 class="modal-title" data-i18n="shop">Магазин</h3>
+        <div class="shop-balance"><svg class="i"><use href="#i-coin"/></svg><span class="coins-value">0</span></div>
+        <div id="shop-list" class="shop-list"></div>
+        <button id="btn-shop-free" class="btn btn-ad btn-block">
+          <svg class="i"><use href="#i-ad"/></svg><span data-i18n="freeCoins">Бесплатные монеты</span>
+          <span class="tag">+<span class="free-coins-amount">50</span> <svg class="i i-sm"><use href="#i-coin"/></svg></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="modal-leaders" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card modal-wide">
+        <button class="modal-close" data-close aria-label="Закрыть"><svg class="i"><use href="#i-close"/></svg></button>
+        <div class="modal-icon trophy-icon"><svg class="i"><use href="#i-trophy"/></svg></div>
+        <h3 class="modal-title" data-i18n="leaders">Рейтинг</h3>
+        <p class="muted" data-i18n="leadersSub">Лучшие игроки в режиме «Марафон»</p>
+        <div id="leaders-list" class="leaders-list"></div>
+        <button id="btn-auth" class="btn btn-primary btn-block" hidden data-i18n="login">Войти, чтобы попасть в рейтинг</button>
+      </div>
+    </div>
+
+    <div id="modal-daily" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card modal-wide">
+        <button class="modal-close" data-close aria-label="Закрыть"><svg class="i"><use href="#i-close"/></svg></button>
+        <h3 class="modal-title" data-i18n="dailyTitle">Ежедневный бонус</h3>
+        <p class="muted" data-i18n="dailySub">Заходи каждый день — награда растёт!</p>
+        <div id="daily-grid" class="daily-grid"></div>
+        <button id="btn-daily-x2" class="btn btn-ad btn-block">
+          <svg class="i"><use href="#i-ad"/></svg><span data-i18n="claimX2">Забрать x2</span><span class="tag">x2</span>
+        </button>
+        <button id="btn-daily-claim" class="btn btn-primary btn-block" data-i18n="claim">Забрать</button>
+      </div>
+    </div>
+
+    <div id="modal-settings" class="modal" role="dialog" aria-modal="true" hidden>
+      <div class="modal-card">
+        <button class="modal-close" data-close aria-label="Закрыть"><svg class="i"><use href="#i-close"/></svg></button>
+        <h3 class="modal-title" data-i18n="settings">Настройки</h3>
+        <div class="settings-list">
+          <label class="setting">
+            <span data-i18n="sound">Звук</span>
+            <input type="checkbox" id="set-sound" class="switch">
+          </label>
+          <label class="setting">
+            <span data-i18n="vibro">Вибрация</span>
+            <input type="checkbox" id="set-vibro" class="switch">
+          </label>
+          <div class="setting">
+            <span data-i18n="language">Язык</span>
+            <div class="seg">
+              <button class="seg-btn" data-lang="ru">RU</button>
+              <button class="seg-btn" data-lang="en">EN</button>
+            </div>
+          </div>
+        </div>
+        <p class="muted small" id="settings-version">v1.0</p>
+      </div>
+    </div>
+
+    <div id="ad-mock" class="ad-mock" hidden>
+      <div class="ad-mock-card">
+        <svg class="i"><use href="#i-ad"/></svg>
+        <p data-i18n="testAd">Тестовая реклама</p>
+        <b id="ad-mock-count">3</b>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   </div>
 
-  <script>
-    // State
-    let pancakeCount = 2;
-    let checkedItems = new Set();
-    
-    // Timer State
-    let timerDuration = 60; // 60s for side 1, 25s for side 2
-    let timeRemaining = 60;
-    let timerInterval = null;
-    let isRunning = false;
-    let currentSide = 1;
-
-    // Helper: Smart fractions display
-    function formatFraction(num) {
-      if (num <= 0) return '0';
-      const whole = Math.floor(num);
-      const frac = num - whole;
-      
-      let fracStr = '';
-      if (Math.abs(frac - 0.125) < 0.05) fracStr = '⅛';
-      else if (Math.abs(frac - 0.25) < 0.05) fracStr = '¼';
-      else if (Math.abs(frac - 0.333) < 0.06) fracStr = '⅓';
-      else if (Math.abs(frac - 0.5) < 0.05) fracStr = '½';
-      else if (Math.abs(frac - 0.666) < 0.06) fracStr = '⅔';
-      else if (Math.abs(frac - 0.75) < 0.05) fracStr = '¾';
-      else if (frac > 0.95) return String(whole + 1);
-      else if (frac > 0.05) {
-        // Fallback round to 1 decimal place
-        fracStr = (Math.round(frac * 10) / 10).toString().replace('0.', '.');
-      }
-
-      if (whole === 0) return fracStr || '0';
-      if (!fracStr) return String(whole);
-      return `${whole} ${fracStr}`;
-    }
-
-    // Russian pluralization helper
-    function getPlural(n, one, two, five) {
-      n = Math.abs(n) % 100;
-      const n1 = n % 10;
-      if (n > 10 && n < 20) return five;
-      if (n1 > 1 && n1 < 5) return two;
-      if (n1 === 1) return one;
-      return five;
-    }
-
-    // Smart egg calculation based on original recipe logic
-    function getEggCalculation(count) {
-      if (count === 1) {
-        return {
-          amount: "1",
-          unit: "желток",
-          detail: "или 1 ст. л. взбитого яйца",
-          adviceTitle: "На 1 блинчик:",
-          adviceText: "Лучше всего взять 1 желток (или ложку взбитого яйца). Так блинчик будет нежным и без привкуса омлета."
-        };
-      }
-      if (count === 2) {
-        return {
-          amount: "1",
-          unit: "желток",
-          detail: "или 2 ст. л. взбитого яйца",
-          adviceTitle: "Секрет идеальной текстуры на 2 блина:",
-          adviceText: "В оригинальном рецепте на 2 блинчика идет именно 1 желток (или 2 ст. л. взбитого яйца). Блинчики получаются золотистыми и шелковистыми."
-        };
-      }
-      if (count >= 3 && count <= 5) {
-        return {
-          amount: "1",
-          unit: "целое яйцо (С1/С0)",
-          detail: "взбить вилкой",
-          adviceTitle: "Пропорция на небольшую порцию:",
-          adviceText: "На 3–5 блинчиков 1 целое яйцо категории С1 или С0 сбалансирует тесто идеально."
-        };
-      }
-      // For more than 5 pancakes
-      const eggs = Math.round(count / 4);
-      const eggWord = getPlural(eggs, "целое яйцо", "целых яйца", "целых яиц");
-      return {
-        amount: String(eggs),
-        unit: eggWord,
-        detail: "категории С1",
-        adviceTitle: "Порция на большую компанию:",
-        adviceText: `Для ${count} блинчиков оптимально взять ${eggs} ${eggWord}. Тесто получится эластичным и будет легко разливаться.`
-      };
-    }
-
-    function calculateIngredients(count) {
-      // Base per 1 pancake:
-      // Milk: 2.5 ст. л.
-      // Flour: 1 ст. л. с горкой
-      // Boiling water: 0.5 ст. л.
-      // Butter/oil: 0.5 ст. л.
-      // Sugar: 0.25 ч. л.
-      // Salt: 0.125 ч. л.
-      const milkTBSP = count * 2.5;
-      const flourTBSP = count * 1.0;
-      const waterTBSP = count * 0.5;
-      const butterTBSP = count * 0.5;
-      const sugarTSP = count * 0.25;
-      const saltTSP = count * 0.125;
-
-      const eggInfo = getEggCalculation(count);
-
-      // Salt special text
-      let saltAmountText = formatFraction(saltTSP);
-      let saltDetail = "";
-      if (count <= 2) {
-        saltDetail = "щепотка";
-      }
-
-      return [
-        {
-          id: 'milk',
-          icon: '🥛',
-          name: 'Молоко',
-          amount: formatFraction(milkTBSP),
-          unit: 'ст. л.',
-          hint: count >= 8 ? `(~${Math.round(milkTBSP * 15)} мл, комнатной температуры)` : 'комнатной температуры'
-        },
-        {
-          id: 'flour',
-          icon: '🌾',
-          name: 'Мука пшеничная',
-          amount: formatFraction(flourTBSP),
-          unit: 'ст. л.',
-          hint: 'с небольшой горкой'
-        },
-        {
-          id: 'egg',
-          icon: '🥚',
-          name: 'Яйцо / желток',
-          amount: eggInfo.amount,
-          unit: eggInfo.unit,
-          hint: eggInfo.detail
-        },
-        {
-          id: 'water',
-          icon: '🫖',
-          name: 'Крутой кипяток',
-          amount: formatFraction(waterTBSP),
-          unit: 'ст. л.',
-          hint: 'прямо из закипевшего чайника'
-        },
-        {
-          id: 'butter',
-          icon: '🧈',
-          name: 'Сливочное или раст. масло',
-          amount: formatFraction(butterTBSP),
-          unit: 'ст. л.',
-          hint: 'растопленное (в тесто)'
-        },
-        {
-          id: 'sugar',
-          icon: '🍬',
-          name: 'Сахар',
-          amount: formatFraction(sugarTSP),
-          unit: 'ч. л.',
-          hint: 'для румяной корочки'
-        },
-        {
-          id: 'salt',
-          icon: '🧂',
-          name: 'Соль',
-          amount: saltAmountText,
-          unit: 'ч. л.',
-          hint: saltDetail || 'балансирует сладость'
-        }
-      ];
-    }
-
-    function renderIngredients() {
-      const listEl = document.getElementById('ingredientsList');
-      const items = calculateIngredients(pancakeCount);
-      const eggInfo = getEggCalculation(pancakeCount);
-
-      // Update egg advice card
-      document.getElementById('eggAdviceTitle').textContent = eggInfo.adviceTitle;
-      document.getElementById('eggAdviceText').textContent = eggInfo.adviceText;
-
-      listEl.innerHTML = items.map(item => {
-        const isChecked = checkedItems.has(item.id);
-        return `
-          <div data-id="${item.id}" class="ingredient-row flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer select-none ${
-            isChecked 
-              ? 'bg-stone-50 border-stone-200 opacity-60' 
-              : 'bg-white hover:bg-brand-50/50 border-brand-200/80 shadow-xs'
-          }">
-            <div class="flex items-center gap-3">
-              <input type="checkbox" ${isChecked ? 'checked' : ''} class="w-5 h-5 rounded-lg text-brand-600 focus:ring-brand-500 border-stone-300 accent-amber-600 cursor-pointer pointer-events-none">
-              <span class="text-2xl">${item.icon}</span>
-              <div>
-                <div class="font-bold text-sm text-stone-900 ${isChecked ? 'line-through text-stone-500' : ''}">${item.name}</div>
-                <div class="text-[11px] text-stone-400 font-medium">${item.hint}</div>
-              </div>
-            </div>
-            
-            <div class="text-right pl-3 shrink-0">
-              <span class="text-base font-black text-brand-900 ${isChecked ? 'line-through text-stone-400' : ''}">${item.amount}</span>
-              <span class="text-xs font-bold text-stone-600 ml-0.5">${item.unit}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      // Attach click listeners to rows
-      listEl.querySelectorAll('.ingredient-row').forEach(row => {
-        row.addEventListener('click', () => {
-          const id = row.getAttribute('data-id');
-          if (checkedItems.has(id)) {
-            checkedItems.delete(id);
-          } else {
-            checkedItems.add(id);
-          }
-          renderIngredients();
-        });
-      });
-
-      // Update Step 6 text with portion mention
-      const bakeStepText = document.getElementById('bakeStepText');
-      if (pancakeCount === 1) {
-        bakeStepText.textContent = "Вылей всё тесто на сковороду, распредели кругом. Жарь ~60 сек до румяных краев, переверни и подержи еще 25 сек.";
-      } else if (pancakeCount === 2) {
-        bakeStepText.textContent = "Вылей ровно половину теста, распредели кругом. Жарь ~60 сек, переверни на 25 сек. Затем вылей остаток теста и пожарь второй блинчик!";
-      } else {
-        bakeStepText.textContent = `Жарь блинчики один за другим (всего ${pancakeCount} шт.): наливай порцию теста, круговым движением распределяй по сковороде. Жарь ~60 сек на первой стороне и ~25 сек на второй.`;
-      }
-    }
-
-    function updateUI() {
-      // Sync input & slider
-      document.getElementById('pancakeInput').value = pancakeCount;
-      document.getElementById('pancakeSlider').value = pancakeCount;
-
-      // Word plural
-      const word = getPlural(pancakeCount, 'блинчик', 'блинчика', 'блинчиков');
-      document.getElementById('pancakeWord').textContent = word;
-
-      // Note
-      const noteEl = document.getElementById('portionNote');
-      if (pancakeCount <= 2) {
-        noteEl.textContent = 'на 1 персону (перекус / на пробу)';
-      } else if (pancakeCount <= 5) {
-        noteEl.textContent = 'на 2 персоны (дуэт)';
-      } else if (pancakeCount <= 10) {
-        noteEl.textContent = 'на 3–4 персоны (сытный завтрак)';
-      } else {
-        noteEl.textContent = 'на большую компанию / семью';
-      }
-
-      // Re-render ingredients
-      renderIngredients();
-    }
-
-    // Set count handler
-    function setCount(newVal) {
-      let val = parseInt(newVal, 10);
-      if (isNaN(val) || val < 1) val = 1;
-      if (val > 60) val = 60;
-      pancakeCount = val;
-      updateUI();
-    }
-
-    document.getElementById('incrementBtn').addEventListener('click', () => {
-      setCount(pancakeCount + 1);
-    });
-
-    document.getElementById('decrementBtn').addEventListener('click', () => {
-      setCount(pancakeCount - 1);
-    });
-
-    document.getElementById('pancakeInput').addEventListener('change', (e) => {
-      setCount(e.target.value);
-    });
-
-    document.getElementById('pancakeSlider').addEventListener('input', (e) => {
-      setCount(e.target.value);
-    });
-
-    // Preset buttons
-    document.querySelectorAll('.preset-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const count = parseInt(btn.getAttribute('data-count'), 10);
-        setCount(count);
-      });
-    });
-
-    // Reset checklist
-    document.getElementById('resetChecklistBtn').addEventListener('click', () => {
-      checkedItems.clear();
-      renderIngredients();
-      showToast('Отметки ингредиентов сброшены', '🧹');
-    });
-
-    // Tone synthesizer using Web Audio API (no external files)
-    function playBeep() {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
-        
-        // Gentle bell chime sequence: 2 notes
-        const now = ctx.currentTime;
-        
-        // First tone
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(659.25, now); // E5
-        gain1.gain.setValueAtTime(0.25, now);
-        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-        osc1.connect(gain1);
-        gain1.connect(ctx.destination);
-        osc1.start(now);
-        osc1.stop(now + 0.4);
-
-        // Second tone higher
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(880, now + 0.15); // A5
-        gain2.gain.setValueAtTime(0.3, now + 0.15);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.start(now + 0.15);
-        osc2.stop(now + 0.8);
-      } catch (e) {
-        console.warn('Audio not available', e);
-      }
-    }
-
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function updateTimerDisplay() {
-      const display = document.getElementById('timerDisplay');
-      const progress = document.getElementById('timerProgress');
-      display.textContent = formatTime(timeRemaining);
-      
-      const pct = (timeRemaining / timerDuration) * 100;
-      progress.style.width = `${pct}%`;
-    }
-
-    function setSide(sideNum) {
-      currentSide = sideNum;
-      pauseTimer();
-      if (sideNum === 1) {
-        timerDuration = 60;
-        timeRemaining = 60;
-        document.getElementById('timerSideLabel').textContent = 'Сторона 1: До подрумянивания краев';
-        document.getElementById('timerHint').textContent = 'Около 60 секунд на среднем огне';
-        document.getElementById('selectSide1').className = 'py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-brand-900 transition';
-        document.getElementById('selectSide2').className = 'py-1.5 text-xs font-semibold rounded-lg text-stone-600 hover:text-stone-900 transition';
-      } else {
-        timerDuration = 25;
-        timeRemaining = 25;
-        document.getElementById('timerSideLabel').textContent = 'Сторона 2: До золотистости';
-        document.getElementById('timerHint').textContent = 'Около 20–25 секунд';
-        document.getElementById('selectSide2').className = 'py-1.5 text-xs font-semibold rounded-lg bg-white shadow-xs text-brand-900 transition';
-        document.getElementById('selectSide1').className = 'py-1.5 text-xs font-semibold rounded-lg text-stone-600 hover:text-stone-900 transition';
-      }
-      document.getElementById('timerStatusBadge').textContent = 'Готов к старту';
-      document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600';
-      updateTimerDisplay();
-    }
-
-    function startTimer() {
-      if (isRunning) return;
-      isRunning = true;
-      document.getElementById('playIcon').classList.add('hidden');
-      document.getElementById('pauseIcon').classList.remove('hidden');
-      document.getElementById('toggleTimerText').textContent = 'Пауза';
-      document.getElementById('timerStatusBadge').textContent = 'Идет жарка...';
-      document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 animate-pulse';
-
-      timerInterval = setInterval(() => {
-        timeRemaining--;
-        updateTimerDisplay();
-
-        if (timeRemaining <= 0) {
-          clearInterval(timerInterval);
-          isRunning = false;
-          playBeep();
-          document.getElementById('playIcon').classList.remove('hidden');
-          document.getElementById('pauseIcon').classList.add('hidden');
-          document.getElementById('toggleTimerText').textContent = 'Старт';
-          
-          if (currentSide === 1) {
-            showToast('Пора переворачивать блинчик! 🥞', '🔔');
-            document.getElementById('timerStatusBadge').textContent = 'Переворачивай!';
-            document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold';
-            // Auto switch to side 2 suggestion
-            setTimeout(() => {
-              setSide(2);
-            }, 1200);
-          } else {
-            showToast('Блинчик готов! Снимай на тарелку! 🎉', '🥞');
-            document.getElementById('timerStatusBadge').textContent = 'Готово!';
-            document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold';
-            setTimeout(() => {
-              setSide(1);
-            }, 1500);
-          }
-        }
-      }, 1000);
-    }
-
-    function pauseTimer() {
-      if (!isRunning) return;
-      clearInterval(timerInterval);
-      isRunning = false;
-      document.getElementById('playIcon').classList.remove('hidden');
-      document.getElementById('pauseIcon').classList.add('hidden');
-      document.getElementById('toggleTimerText').textContent = 'Продолжить';
-      document.getElementById('timerStatusBadge').textContent = 'На паузе';
-      document.getElementById('timerStatusBadge').className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600';
-    }
-
-    document.getElementById('toggleTimerBtn').addEventListener('click', () => {
-      if (isRunning) pauseTimer();
-      else startTimer();
-    });
-
-    document.getElementById('resetTimerBtn').addEventListener('click', () => {
-      pauseTimer();
-      timeRemaining = timerDuration;
-      document.getElementById('toggleTimerText').textContent = 'Запустить';
-      document.getElementById('timerStatusBadge').textContent = 'Сброшен';
-      updateTimerDisplay();
-    });
-
-    document.getElementById('selectSide1').addEventListener('click', () => setSide(1));
-    document.getElementById('selectSide2').addEventListener('click', () => setSide(2));
-
-    function showToast(message, icon = '✨') {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      document.getElementById('toastIcon').textContent = icon;
-      toast.classList.remove('translate-y-24', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-24', 'opacity-0');
-      }, 2600);
-    }
-
-    // Copy ingredients list to clipboard using execCommand fallback
-    document.getElementById('quickCopyBtn').addEventListener('click', () => {
-      const items = calculateIngredients(pancakeCount);
-      const word = getPlural(pancakeCount, 'блинчик', 'блинчика', 'блинчиков');
-      
-      let text = `Рецепт на ${pancakeCount} ${word} (в ложках):\n`;
-      items.forEach(i => {
-        text += `• ${i.name}: ${i.amount} ${i.unit} (${i.hint})\n`;
-      });
-      text += `\nПриятного аппетита!`;
-
-      // Copy mechanism compatible with iframe restrictions
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.left = '-9999px';
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          showToast(`Ингредиенты на ${pancakeCount} ${word} скопированы!`, '📋');
-        } else {
-          showToast('Не удалось скопировать', '⚠️');
-        }
-      } catch (err) {
-        showToast('Ошибка при копировании', '⚠️');
-      } finally {
-        document.body.removeChild(textarea);
-      }
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      updateUI();
-      updateTimerDisplay();
-    });
-  </script>
+  <script src="clips.js"></script>
+  <script src="player.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
